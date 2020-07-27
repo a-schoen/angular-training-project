@@ -1,0 +1,1 @@
+Current Angular training project. The goal is to build myself a handy editable collection of rss subscriptions, links etc of the mess of bookmarks that I like to check out during those idle clicking-around moments. Currently still building the bare bones and using bootstrap for the css for now.

@@ -1,0 +1,36 @@
+
+<div class="row">
+  <div class="col-xs-12 col-md-6" *ngIf="router.url === '/user/signup'">
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmitSignup()">
+      <h2>Create a user account</h2>
+      <div class="form-group">
+        <label for="signupEmail">Email address:</label>
+        <input type="email" class="form-control" formControlName="signupEmail" id="signupEmail">
+      </div>
+      <div class="form-group">
+        <label for="signupPassword">Password:</label>
+        <input type="password" class="form-control" formControlName="signupPassword" id="signupPassword">
+      </div>
+      <div class="form-group">
+        <label for="repeatPassword">Repeat Password:</label>
+        <input type="password" class="form-control" formControlName="repeatPassword" id="repeatPassword" ngValidateEqual="signupPassword">
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="!signupForm.valid">Sign up</button>
+    </form>
+  </div>
+
+  <div *ngIf="router.url !== '/user/signup'" class="col-xs-12 col-md-6">
+    <form [formGroup]="loginForm" (submit)="onSubmitLogin()">
+      <div class="form-group">
+        <label for="userEmail">Email address:</label>
+        <input type="email" class="form-control" id="userEmail">
+      </div>
+      <div class="form-group">
+        <label for="userPassword">Password</label>
+        <input type="password" class="form-control" id="userPassword">
+      </div>
+      <button type="submit" [disabled]="!loginForm.valid" class="btn btn-primary">Log in</button>
+    </form>
+  </div>
+</div>
+

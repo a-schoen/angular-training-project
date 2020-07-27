@@ -1,0 +1,6 @@
+<p>entry-list works!</p>
+
+<h1>Test Links</h1>
+<ul>
+  <li *ngFor="let entry of entries"><a [routerLink]="['/entries', 'entry', entry.id]">{{ entry.title }}</a></li>
+</ul>
