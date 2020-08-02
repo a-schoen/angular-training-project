@@ -1,52 +1,49 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Entry } from './entry.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EntryDataService {
 
-  testEntries = [
-    {
-     id: 1,
-     type: 'feed',
-     link: 'testlink 1',
-     title: 'title 1',
-     imageUrl: 'img url 1',
-     content: 'test content 1',
-    },
-    {
-      id: 2,
-      type: 'feed',
-      link: 'testlink 2',
-      title: 'title 2',
-      imageUrl: 'img url 2',
-      content: 'test content 2',
-     }
-  ]
+  dbUrl: string = 'https://****.firebaseio.com/';
+  collectionUrl = 'https://****.firebaseio.com/entries.json';
+  entries: Entry[] = [];
 
-  constructor() { }
+  constructor(
+    private http: HttpClient
+  ) { }
 
-  getEntry(id){
-    return this.testEntries[id - 1];
+  getEntry(id: string): Observable<any>{
+    const entryUrl = this.dbUrl + 'entries/'+ id + '.json';
+    return this.http.get(entryUrl);
   }
 
-  getAllEntries(type: string) {
-    //toDo: replace test version
-    return this.testEntries;
-
+  getAllEntries(): Observable<any> {
+    return this.http.get(this.collectionUrl);
   }
 
-  createEntry(entry: Entry) {
-
+  createEntry(entry: Entry): Observable<any> {
+    //toDo: sanitize input 
+    const body = JSON.stringify(entry);
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.post(this.collectionUrl, body, {headers: headers});
   }
 
-  updateEntry(oldEntryId, newEntry) {
-
+  updateEntry(entryId: string, newEntry: Entry): Observable<any> {
+    //toDo: sanitize input 
+    const entryUrl = this.dbUrl + 'entries/' +  entryId + '.json';
+    const body = JSON.stringify(newEntry);
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.put(entryUrl, body, {headers: headers});
   }
 
-  deleteEntry(id) {
-
+  deleteEntry(id: string): Observable<any> {
+    //toDo: request user confirmation
+    const entryUrl = this.dbUrl + 'entries/' +  id + '.json';
+    return this.http.delete(entryUrl);
   }
 
 }

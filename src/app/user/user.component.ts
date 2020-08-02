@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -10,7 +10,7 @@ import { UserService } from './user.service';
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss']
 })
-export class UserComponent implements OnInit {
+export class UserComponent implements OnInit, OnDestroy {
 
   signupForm: FormGroup;
   loginForm: FormGroup;
@@ -36,29 +36,29 @@ export class UserComponent implements OnInit {
             ]),
             'signupPassword': [null, Validators.required],
             'repeatPassword': [null, Validators.required]
-        });
-        console.log('test-4')
-
-
+        })
       } else {
-        console.log('test-3');
         this.loginForm = this.formBuilder.group({
-          'userEmail': this.formBuilder.control(null, [
+          'loginEmail': this.formBuilder.control(null, [
             Validators.required,
             Validators.pattern("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
           ]),
-          'userPassword': [null, Validators.required]
+          'loginPassword': [null, Validators.required]
         })
       }
     });
   }
 
-  onSubmitSignup() {
-    this.userService.createUser(this.signupForm.value.signupEmail, this.signupForm.value.signupPassword );
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
-  onSubmitLogin() {
-    this.userService.loginUser(this.loginForm.value.loginEmail, this.loginForm.value.loginPassword );
+  onSubmitSignup(): void {
+    this.userService.createUser(this.signupForm.value.signupEmail, this.signupForm.value.signupPassword);
+  }
+
+  onSubmitLogin(): void {
+    this.userService.loginUser(this.loginForm.value.loginEmail, this.loginForm.value.loginPassword);
   }
 
 }

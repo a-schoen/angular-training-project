@@ -1,8 +1,17 @@
-<p>Entry:</p>
-<h2>{{ currentEntry.title }}</h2>
-<p>Type: {{ currentEntry.type }}</p>
-<p>Type: {{ currentEntry.imageUrl }}</p>
-<p>Type: {{ currentEntry.link }}</p>
-<p>Type: {{ currentEntry.content }}</p>
+<div class="row">
+  <div class="col-xs-12">
+    <h2>{{ currentEntry.title }}</h2>
 
-<p *ngIf="true">Test</p>
+    <p>Type: {{ currentEntry.type }}</p>
+    <p *ngIf="currentEntry.imageUrl !== ''"><img src="{{ currentEntry.imageUrl }}" alt="{{ currentEntry.title }}"></p>
+    <p *ngIf="currentEntry.link !== ''">Link: {{ currentEntry.link }}</p>
+    <p>Content: {{ currentEntry.content }}</p>
+
+    <div class="btn-group" role="group" *ngIf="isLoggedIn">
+      <button [routerLink]="['edit']" type="button" class="btn btn-primary">Edit Entry</button>
+      <button type="button" class="btn btn-danger" (click)="onDelete()">Delete Entry</button>
+    </div>
+  </div>
+</div>
+
+

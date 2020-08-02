@@ -9,9 +9,13 @@ declare var firebase: any;
 })
 export class UserService {
 
+  isLoggedIn: boolean;
+
   constructor(
     private router: Router
-  ) {}
+  ) {
+    this.trackLoginStatus();
+  }
 
   createUser(userEmail: string, userPassword: string) {
     firebase.auth().createUserWithEmailAndPassword(userEmail, userPassword).then(() => {
@@ -22,7 +26,7 @@ export class UserService {
   loginUser(userEmail: string, userPassword: string) {
     firebase.auth().signInWithEmailAndPassword(userEmail, userPassword).then(() => {
       this.router.navigate(['/']);
-    }).catch(err => console.log(err));
+    }).catch(err => console.error(err));
   }
 
   logoutUser() {
@@ -30,14 +34,14 @@ export class UserService {
     this.router.navigate(['/']);
   }
 
-  isLoggedIn() {
+  trackLoginStatus() {
     const loginState = new Subject<boolean>();
     firebase.auth().onAuthStateChanged(user => {
       if(user) {
         loginState.next(true);
       } else {
-        loginState.next(false)
-      }  
+        loginState.next(false);
+      }
     });
     return loginState.asObservable();
   }

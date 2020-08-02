@@ -1,6 +1,15 @@
-<p>entry-list works!</p>
+<div class="row">
+  <div class="col-xs-12">
+    <ul>
+      <li *ngFor="let entry of entries | keyvalue">
+        <a [routerLink]="['/entries', 'entry', entry.key]">{{ entry.value.title }}</a>
+      </li>
+    </ul>
+    <div class="btn-group" role="group" *ngIf="isLoggedIn">
+      <button type="button" class="btn btn-primary" [routerLink]="['entry', 'add']">Add New Entry</button>
+    </div>
+  </div>
+</div>
 
-<h1>Test Links</h1>
-<ul>
-  <li *ngFor="let entry of entries"><a [routerLink]="['/entries', 'entry', entry.id]">{{ entry.title }}</a></li>
-</ul>
+
+

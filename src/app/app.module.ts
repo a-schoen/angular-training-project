@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { ValidateEqualModule } from 'ng-validate-equal';
 
 import { routing } from './app.routing';
@@ -23,6 +24,7 @@ import { UserService } from './user/user.service';
     BrowserModule,
     RouterModule,
     ReactiveFormsModule,
+    HttpClientModule,
     ValidateEqualModule,
     routing
   ],

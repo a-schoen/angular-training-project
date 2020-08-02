@@ -1,1 +1,32 @@
-<p>entry-edit works!</p>
+<div class="row">
+  <div class="col-xs-12 col-md-6">
+    <h2>{{ pageTitle }}</h2>
+    <form [formGroup]="editForm" *ngIf="isLoaded" (ngSubmit)="onSaveEdit()">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" id="title" formControlName="title">
+      </div>
+      <div class="form-group">
+        <label for="type">Type</label>
+        <select class="form-control" id="type" formControlName="type">
+          <option value="link">Link</option>
+          <option value="rss">RSS Feed</option>
+          <option value="image">Image</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="link">Link</label>
+        <input type="text" class="form-control" id="link" formControlName="link">
+      </div>
+      <div class="form-group">
+        <label for="imgeUrl">Image URL</label>
+        <input type="text" class="form-control" id="imageUrl" formControlName="imageUrl">
+      </div>
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea class="form-control" id="content" formControlName="content"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Save Entry</button>
+    </form>
+  </div>
+</div>

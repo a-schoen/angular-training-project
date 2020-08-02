@@ -11,13 +11,22 @@ export class HeaderComponent implements OnInit {
   isLoggedIn: boolean = false;
 
   constructor(
-    private userService: UserService
+    public userService: UserService
   ) { }
 
   ngOnInit(): void {
+    this.checkLoginStatus();
   }
 
-  onLogout() {
+  //toDo: get rid of the repetition & do this globally/in parent component
+  checkLoginStatus(): void {
+    this.userService.trackLoginStatus().subscribe(
+      loginStatus => { this.isLoggedIn = loginStatus; },
+      err => { console.error(err) }
+    );
+  }
+
+  onLogout(): void {
     this.userService.logoutUser();
   }
 }
