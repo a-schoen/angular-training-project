@@ -2,8 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Entry } from '../entry.model';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { EntryDataService } from '../entry-data.service';
+import { Subscription, Observable } from 'rxjs';
+import { Store, select } from '@ngrx/store';
+import { createEntryRequest, updateEntryRequest } from '../store/entry.actions';
+import { AppState } from 'src/app/app.state';
 
 @Component({
   selector: 'app-entry-edit',
@@ -12,64 +14,63 @@ import { EntryDataService } from '../entry-data.service';
 })
 export class EntryEditComponent implements OnInit, OnDestroy {
 
-  getRouteSubscription: Subscription;
   getEntrySubscription: Subscription;
   saveEntrySubscription: Subscription;
   editForm: FormGroup;
   isAdd: boolean = true;
   isLoaded: boolean = false;
   pageTitle: string = 'Add New Entry';
+  entries$: Observable<Entry[]>;
   currentEntryId: string;
   currentEntry: any = {
+    id: this.currentEntryId,
     type: '',
     link: '',
-    title: '',
-    imageUrl: '',
-    content: ''
+    title: ''
   };
+  selectedType: string; 
 
   constructor(
+    private store: Store<AppState>,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
-    private dataService: EntryDataService
   ) { }
 
   ngOnInit(): void {
-    this.getEntry();
-  }
-
-  ngOnDestroy(): void {
-    this.getEntrySubscription.unsubscribe();
-    this.getRouteSubscription.unsubscribe();
-    if(this.saveEntrySubscription) {
-      this.saveEntrySubscription.unsubscribe();
+    const routeSnapshot = this.activatedRoute.snapshot
+    this.currentEntryId = routeSnapshot.params['id'];
+    this.entries$ = this.store.pipe(select(state => state.entries));
+    
+    if(routeSnapshot.routeConfig.path === 'entry/:id/edit'){
+      this.isAdd = false;
+      this.getEntry();
+      this.pageTitle = "Edit Entry Details";
+    } else {
+      this.setForm();
     }
   }
 
-  getEntry(): void {
-    this.getRouteSubscription = this.activatedRoute.params.subscribe(params => {
-      if(params.hasOwnProperty('id')) {
-        this.isAdd = false;
-        this.pageTitle = "Edit Entry Details";
-        this.currentEntryId = params['id'];
-        
-        //toDo: find different solution without use of nested subscriptions
-        this.getEntrySubscription = this.dataService.getEntry(this.currentEntryId).subscribe(
-          data => { 
-            this.currentEntry = data; 
-            this.setForm();
-          },
-          err => {
-            console.error(err);
-            this.router.navigate(['/entries']);
-          }
-        );
-      }
-      else {
+  ngOnDestroy(): void {
+    if(this.getEntrySubscription){
+      this.getEntrySubscription.unsubscribe();
+    }
+  }
+
+  getEntry() {
+    this.getEntrySubscription = this.entries$.subscribe(
+      entries => {
+        const filtered = [...entries].filter((entry) => {
+          return entry.id === this.currentEntryId;
+        });
+        this.currentEntry = filtered[0];
         this.setForm();
+      },
+      error => {
+        console.error(error);
+        this.router.navigate(['/entries']);
       }
-    });
+    );
   }
 
   setForm(): void {
@@ -83,21 +84,29 @@ export class EntryEditComponent implements OnInit, OnDestroy {
     this.isLoaded = true;
   }
 
+  onUpdateForm(): void {
+    this.selectedType = this.editForm.value['type'];
+    if(this.selectedType === 'twitter') {
+      this.editForm.addControl('username', this.formBuilder.control(this.currentEntry.username ? this.currentEntry.username : '', Validators.required));
+      this.editForm.addControl('count', this.formBuilder.control(this.currentEntry.count ? this.currentEntry.count : '', Validators.required));
+    } else {
+      this.editForm.get('link').setValidators(Validators.required);
+    }
+    // toDo: specify form for other entry types
+  }
+
   onSaveEdit(): void {
     //todo: perhaps get form content via two way binding
     const newEntry: Entry = this.editForm.value;
 
     if(this.isAdd){
-      this.saveEntrySubscription = this.dataService.createEntry(newEntry).subscribe(
-        result => { this.router.navigate(['entries', 'entry', result.name]) },
-        err => { console.error(err) }
-      );
+      newEntry.id = 'newEntryId';
+      this.store.dispatch(createEntryRequest({entry: newEntry}));
+      this.router.navigate(['entries']);
     } else {
-      this.saveEntrySubscription = this.dataService.updateEntry(this.currentEntryId, newEntry).subscribe(
-        data => { this.router.navigate(['entries', 'entry', this.currentEntryId]) },
-        err => { console.error(err) }
-      );
+      newEntry.id = this.currentEntryId;
+      this.store.dispatch(updateEntryRequest({entry: newEntry }));
+      this.router.navigate(['entries', 'entry', this.currentEntryId]);
     }
-    
   }
 }

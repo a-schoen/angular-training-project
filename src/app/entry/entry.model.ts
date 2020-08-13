@@ -1,11 +1,12 @@
-export class Entry {
-
-   constructor(
-     public type: string,
-     public link: string,
-     public title: string,
-     public imageUrl: string,
-     public content: string,
-   ){}
-
+export interface Entry {
+  id: string,
+  type: '' | 'link' | 'rss' | 'image' | 'twitter',
+  link?: string,
+  title: string,
+  subtitle?: string,
+  imageUrl?: string,
+  content?: string,
+  published?: string
+  username?: string
+  count?: string
 }

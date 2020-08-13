@@ -1,17 +1,42 @@
-<div class="row">
-  <div class="col-xs-12">
-    <h2>{{ currentEntry.title }}</h2>
+<section class="main-entry-deatils" *ngIf="isLoaded">
+  <div class="row" *ngIf="currentEntry.type !== 'rss'">
+    <div class="col-xs-12">
+      <h1>{{ currentEntry.title }}</h1>
+      <h2 *ngIf="currentEntry.subtitle !== ''">{{ currentEntry.subtitle }}</h2>
+      <p>Type: {{ currentEntry.type }}</p>
+      <p *ngIf="currentEntry.imageUrl !== ''"><img src="{{ currentEntry.imageUrl }}" alt="{{ currentEntry.title }}"></p>
+      <p *ngIf="currentEntry.link !== ''">Link: {{ currentEntry.link }}</p>
+      <p>Content: {{ currentEntry.content }}</p>
 
-    <p>Type: {{ currentEntry.type }}</p>
-    <p *ngIf="currentEntry.imageUrl !== ''"><img src="{{ currentEntry.imageUrl }}" alt="{{ currentEntry.title }}"></p>
-    <p *ngIf="currentEntry.link !== ''">Link: {{ currentEntry.link }}</p>
-    <p>Content: {{ currentEntry.content }}</p>
-
-    <div class="btn-group" role="group" *ngIf="isLoggedIn">
-      <button [routerLink]="['edit']" type="button" class="btn btn-primary">Edit Entry</button>
-      <button type="button" class="btn btn-danger" (click)="onDelete()">Delete Entry</button>
+      <div class="btn-group" role="group" *ngIf="isLoggedIn">
+        <button [routerLink]="['edit']" type="button" class="btn btn-primary">Edit Entry</button>
+        <button type="button" class="btn btn-danger" (click)="onDelete()">Delete Entry</button>
+      </div>
     </div>
   </div>
-</div>
 
+  <div class="row rss" *ngIf="currentEntry.type === 'rss'">
+    <div class="col-xs-12">
+      <h1>{{ currentEntry.title }}</h1>
+      <h2>{{ currentEntry.subtitle }}</h2>
+      <p *ngIf="currentEntry.link !== ''"><a href="{{ currentEntry.link }}">Link</a></p>
+      <p class="content" [innerHTML]="currentEntry.content"></p>
+      <div class="btn-group" role="group" *ngIf="isLoggedIn">
+        <button [routerLink]="['edit']" type="button" class="btn btn-primary">Edit Entry</button>
+        <button type="button" class="btn btn-danger" (click)="onDelete()">Delete Entry</button>
+      </div>
+    </div>
+  </div>
 
+  <div class="row twitter" *ngIf="currentEntry.type === 'twitter'">
+    <div class="col-xs-12">
+      
+      <!-- ToDo: display latest tweets -->
+
+      <div class="btn-group" role="group" *ngIf="isLoggedIn">
+        <button [routerLink]="['edit']" type="button" class="btn btn-primary">Edit Entry</button>
+        <button type="button" class="btn btn-danger" (click)="onDelete()">Delete Entry</button>
+      </div>
+    </div>
+  </div>
+</section>

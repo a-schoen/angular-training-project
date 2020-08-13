@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Entry } from '../entry.model';
-import { EntryDataService } from '../entry-data.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { UserService } from 'src/app/user/user.service';
+import { AppState } from '../../app.state';
+import { Store, select } from '@ngrx/store';
 
 @Component({
   selector: 'app-entry-list',
@@ -13,37 +14,41 @@ import { UserService } from 'src/app/user/user.service';
 export class EntryListComponent implements OnInit, OnDestroy {
 
   entries: Entry[];
+  isLoaded: boolean = false;
   getEntriesSubscription: Subscription;
   loginStatusSubscription: Subscription;
-  isLoggedIn: boolean = false;
+  isLoggedIn: boolean;
+  loginStatus$: Observable<boolean> = this.store.select(state => state.loginStatus.userLoggedIn);
   
   constructor(
-    private dataService: EntryDataService,
+    private store: Store<AppState>,
     public userService: UserService
   ) { }
 
   ngOnInit(): void {
-    this.getEntries();
     this.checkLoginStatus();
+    this.getEntries();
   }
 
   ngOnDestroy(): void {
-    this.getEntriesSubscription.unsubscribe();
     this.loginStatusSubscription.unsubscribe();
+    this.getEntriesSubscription.unsubscribe();
   }
 
-  //toDo: get rid of the repetition & do this globally/in parent component
   checkLoginStatus(): void {
-    this.loginStatusSubscription = this.userService.trackLoginStatus().subscribe(
+    this.loginStatusSubscription = this.loginStatus$.subscribe(
       loginStatus => { this.isLoggedIn = loginStatus; },
       err => { console.error(err) }
     );
   }
 
   getEntries(): void {
-    this.getEntriesSubscription = this.dataService.getAllEntries().subscribe(
-      data => { this.entries = data; },
-      err => { console.error(err)}
-    );   
+    this.getEntriesSubscription = this.store.pipe(select(state => state.entries)).subscribe(
+      entries => {
+        this.entries = [...entries];
+        this.isLoaded = true;
+      },
+      err => { console.error(err) }
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Entry } from './entry.model';
+import { Entry } from '../entry.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -9,7 +9,8 @@ import { Observable } from 'rxjs';
 export class EntryDataService {
 
   dbUrl: string = 'https://****.firebaseio.com/';
-  collectionUrl = 'https://****.firebaseio.com/entries.json';
+  collectionUrl: string = 'https://****.firebaseio.com/entries.json';
+
   entries: Entry[] = [];
 
   constructor(
@@ -27,12 +28,17 @@ export class EntryDataService {
 
   createEntry(entry: Entry): Observable<any> {
     //toDo: sanitize input 
-    const body = JSON.stringify(entry);
+    const newEntry = { ...entry };
+    if(newEntry.hasOwnProperty('id')) {
+      delete newEntry.id;
+    }
+    const body = JSON.stringify(newEntry);
     const headers = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.post(this.collectionUrl, body, {headers: headers});
   }
 
-  updateEntry(entryId: string, newEntry: Entry): Observable<any> {
+  updateEntry(newEntry: Entry): Observable<any> {
+    const entryId = newEntry.id;
     //toDo: sanitize input 
     const entryUrl = this.dbUrl + 'entries/' +  entryId + '.json';
     const body = JSON.stringify(newEntry);
@@ -41,7 +47,6 @@ export class EntryDataService {
   }
 
   deleteEntry(id: string): Observable<any> {
-    //toDo: request user confirmation
     const entryUrl = this.dbUrl + 'entries/' +  id + '.json';
     return this.http.delete(entryUrl);
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Subject, Observable, from } from 'rxjs';
 
 declare var firebase: any;
 
@@ -9,29 +9,20 @@ declare var firebase: any;
 })
 export class UserService {
 
-  isLoggedIn: boolean;
-
   constructor(
     private router: Router
-  ) {
-    this.trackLoginStatus();
-  }
+  ) { }
 
   createUser(userEmail: string, userPassword: string) {
-    firebase.auth().createUserWithEmailAndPassword(userEmail, userPassword).then(() => {
-      this.router.navigate(['/']);
-    }).catch(err => console.log(err));
+    return from(firebase.auth().createUserWithEmailAndPassword(userEmail, userPassword));
   }
 
-  loginUser(userEmail: string, userPassword: string) {
-    firebase.auth().signInWithEmailAndPassword(userEmail, userPassword).then(() => {
-      this.router.navigate(['/']);
-    }).catch(err => console.error(err));
+  loginUser(userEmail: string, userPassword: string): Observable<any> {
+    return from(firebase.auth().signInWithEmailAndPassword(userEmail, userPassword));
   }
 
   logoutUser() {
-    firebase.auth().signOut();
-    this.router.navigate(['/']);
+    return from(firebase.auth().signOut());
   }
 
   trackLoginStatus() {

@@ -8,8 +8,10 @@ import { EntryComponent } from './entry.component';
 import { SingleEntryComponent } from './single-entry/single-entry.component';
 import { EntryListComponent } from './entry-list/entry-list.component';
 import { EntryEditComponent } from './entry-edit/entry-edit.component';
-import { EntryDataService } from './entry-data.service';
+import { EntryDataService } from './services/entry-data.service';
 import { EditAreaGuard } from './entry-edit/editarea.guard';
+import { RssFetchService } from './services/rss-fetch.service';
+import { TwitterFetchService } from './services/twitter-fetch.service';
 
 @NgModule({
   declarations: [
@@ -26,6 +28,8 @@ import { EditAreaGuard } from './entry-edit/editarea.guard';
   ],
   providers: [
     EntryDataService,
+    RssFetchService,
+    TwitterFetchService,
     EditAreaGuard
   ]
 })

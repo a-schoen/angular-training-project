@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../user/user.service';
+import { Store, select } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { AppState } from '../app.state';
+import { logoutUserRequest } from '../user/store/user.actions';
 
 @Component({
   selector: 'app-header',
@@ -8,9 +12,11 @@ import { UserService } from '../../user/user.service';
 })
 export class HeaderComponent implements OnInit {
 
-  isLoggedIn: boolean = false;
+  loginStatus$: Observable<boolean> = this.store.pipe(select(state => state.loginStatus.userLoggedIn));
+  isLoggedIn: boolean;
 
   constructor(
+    private store: Store<AppState>,
     public userService: UserService
   ) { }
 
@@ -18,15 +24,14 @@ export class HeaderComponent implements OnInit {
     this.checkLoginStatus();
   }
 
-  //toDo: get rid of the repetition & do this globally/in parent component
   checkLoginStatus(): void {
-    this.userService.trackLoginStatus().subscribe(
+    this.loginStatus$.subscribe(
       loginStatus => { this.isLoggedIn = loginStatus; },
       err => { console.error(err) }
     );
   }
 
   onLogout(): void {
-    this.userService.logoutUser();
+    this.store.dispatch(logoutUserRequest());
   }
 }
